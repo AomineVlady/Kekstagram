@@ -120,3 +120,9 @@ function getComments(arg) {
         commentsWrapper.appendChild(newComment);
     }
 }
+
+//спрятать блоки счётчика и загрузки доп. коментариев
+const counterComments = document.querySelector('.social__comment-count');
+const loaderComments = document.querySelector('.comments-loader');
+counterComments.classList.add('visually-hidden');
+loaderComments.classList.add('visually-hidden');
