@@ -1,12 +1,22 @@
-//random int
-function getRandomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min)) + min;
-}
+"use strict"
+//заполнение фотографиями
+const picturesWrapper = document.querySelector('.pictures');    //куда вставляется
+const templatePicture = document.querySelector('#picture').content.querySelector('a'); //
+const pictures = document.querySelectorAll('.picture');
+const bigPicture = document.querySelector('.big-picture');
+
+const imgBigPicture = document.querySelector('.big-picture__img').querySelector('img'); //большая картинка
+const bigPictureLikesCount = document.querySelector('.likes-count'); //количество likes
+const bigPictureCommentsCount = document.querySelector('.comments-count'); //количество comments
+const bigPictureDesc = document.querySelector('.social__caption'); //describe
+
+const commentsWrapper = document.querySelector('.social__comments')
+const commentsTemplate = document.querySelector('#comment').content.querySelector('li')
+
+const PHOTOS_COUNT = 25;
 
 //comments
-var autorComments = [
+const autorComments = [
     {
         avatar: 'img/avatar-1.svg',
         message: 'В целом всё неплохо. Но не всё.',
@@ -37,53 +47,49 @@ var autorComments = [
         message: 'Всё отлично!',
         name: 'Влад'
     },
-]
+];
 
-//25 object photos
-var photos = [];
-for (let i = 0; i < 25; i++) {
-    photos[i] = {   
-        url: `photos/${i}.jpg`,
-        likes: `${getRandomInt(15,200)}`,
-        comments: `${getRandomInt(0,6)}`,
-        desc: descriptionList = [
-            'Тестим новую камеру!',
-            'Затусили с друзьями на море',
-            'Как же круто тут кормят',
-            'Отдыхаем...',
-            'Цените каждое мгновенье. Цените тех, кто рядом с вами и отгоняйте все сомненья. Не обижайте всех словами......',
-            'Вот это тачка!',
-        ]
+const descriptionList = [
+                'Тестим новую камеру!',
+                'Затусили с друзьями на море',
+                'Как же круто тут кормят',
+                'Отдыхаем...',
+                'Цените каждое мгновенье. Цените тех, кто рядом с вами и отгоняйте все сомненья. Не обижайте всех словами......',
+                'Вот это тачка!',
+    ];
+
+const photos = [];
+
+//random int
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function getPhoto(arg) {
+    for (let i = 0; i < PHOTOS_COUNT; i++) {
+        arg[i] = {   
+            url: `photos/${i}.jpg`,
+            likes: `${getRandomInt(15,200)}`,
+            comments: `${getRandomInt(0,6)}`,
+            desc: descriptionList,
+        }
     }        
-}  
-
-//заполнение фотографиями
-const picturesWrapper = document.querySelector('.pictures');    //куда вставляется
-const templatePicture = document.querySelector('#picture').content.querySelector('a'); //
+}
 
 for (let i = 1; i < photos.length; i++) {
-    var newPhoto = templatePicture.cloneNode(true);
+    let newPhoto = templatePicture.cloneNode(true);
     newPhoto.querySelector('img').src = photos[i].url;   
     newPhoto.querySelector('.picture__comments').textContent = photos[i].comments;   
     newPhoto.querySelector('.picture__likes').textContent = photos[i].likes;   
     picturesWrapper.appendChild(newPhoto);
 }
 
-const pictures = document.querySelectorAll('.picture');
-const bigPicture = document.querySelector('.big-picture');
-
-const imgBigPicture = document.querySelector('.big-picture__img').querySelector('img'); //большая картинка
-const bigPictureLikesCount = document.querySelector('.likes-count'); //количество likes
-const bigPictureCommentsCount = document.querySelector('.comments-count'); //количество comments
-const bigPictureDesc = document.querySelector('.social__caption'); //describe
-
-const commentsWrapper = document.querySelector('.social__comments')
-const commentsTemplate = document.querySelector('#comment').content.querySelector('li')
-
 //обработка большой картинки
 if(pictures.length>0){
     for (let i = 0; i < pictures.length; i++) {
-        const picture = pictures[i];
+        let picture = pictures[i];
         picture.addEventListener('click', function(e){
             imgBigPicture.src = picture.querySelector('.picture__img').src;
             bigPictureLikesCount.textContent = picture.querySelector('.picture__likes').textContent;
@@ -102,7 +108,7 @@ const bigPictereCancel = document.querySelector('#picture-cancel');
     bigPictereCancel.onclick = function (e) {
         let socialComments = document.querySelectorAll('li.social__comment')
         for (let i = 0; i < socialComments.length; i++) {
-            const element = socialComments[i];
+            let element = socialComments[i];
             document.querySelector('.social__comments').removeChild(element)
         }
         bigPicture.classList.add('hidden');
@@ -113,7 +119,7 @@ const bigPictereCancel = document.querySelector('#picture-cancel');
 //фукнкция заполнения коментария
 function getComments(arg) {
     for (let i = 0; i < arg; i++) {
-        const newComment = commentsTemplate.cloneNode(true);
+        let newComment = commentsTemplate.cloneNode(true);
         let rndAutor = getRandomInt(0,autorComments.length);
         newComment.querySelector('img').src = autorComments[rndAutor].avatar;   
         newComment.querySelector('.social__text').textContent = autorComments[rndAutor].message; 
@@ -126,3 +132,9 @@ const counterComments = document.querySelector('.social__comment-count');
 const loaderComments = document.querySelector('.comments-loader');
 counterComments.classList.add('visually-hidden');
 loaderComments.classList.add('visually-hidden');
+
+
+
+
+// function init;
+getPhoto(photos);
