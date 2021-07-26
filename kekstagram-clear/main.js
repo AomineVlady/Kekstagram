@@ -186,25 +186,34 @@ function initUploaderEventListner() {
 }
 //извлечение ф-й uploader
 function removeUploaderEventListner() {
+
     document.removeEventListener('keydown', onUploaderEscPress);
     imgUploaderBtnCLose.addEventListener('click', clickCloseUploader);
 }
 
+//закрытие uploader кликом
 function clickCloseUploader(e) {
     e.preventDefault();
     closeBox(previewPictureWrapper);
+    uploaderReset();
     removeUploaderEventListner();
 }
 
+//закрытие uploader клавишей escape
 function onUploaderEscPress(e) {
     if(e.key === 'Escape'){
         e.preventDefault();
         closeBox(previewPictureWrapper);
+        uploaderReset();
         removeUploaderEventListner();
     }
 }
+//сброс uploader-изображения
+function uploaderReset() {
+    uploadFile.value = ""; 
+}
 
-//загрузка и добавления изображения
+//загрузка и добавления изображенияc
 function changeHandler() {
     let file = uploadFile.files[0];
     let reader = new FileReader();
@@ -218,3 +227,9 @@ function changeHandler() {
 uploadFile.addEventListener('change', changeHandler); 
 //одну и ту же картинку не удаётся второй раз выбрать и применить
 //
+
+const pin = document.querySelector('.effect-level__pin');
+pin.addEventListener('mouseup', effectPinChange);
+function effectPinChange() {
+    console.log(pin);
+}
