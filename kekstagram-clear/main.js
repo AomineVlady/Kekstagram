@@ -14,6 +14,12 @@ const commentsTemplate = document.querySelector('#comment').content.querySelecto
 
 const bigPictereCancel = document.querySelector('#picture-cancel');//кнопка закрытия большой картинки
 
+const previewPictureWrapper = document.querySelector('.img-upload__overlay')//форма редактирования изображения
+const previewPicture = document.querySelector('.img-upload__preview').querySelector('img');//добавленная пользователем картинка
+const uploadFile = document.querySelector('#upload-file');//input загрузчик файла
+const imgUploaderBtnCLose = document.querySelector('#upload-cancel');// кнопка закрытия формы редактирования
+
+
 const PHOTOS_COUNT = 25;    //кол-во фотографий
 
 //авторы коментариев и коментарии
@@ -81,6 +87,14 @@ function getPhoto(arg) {
     }        
 }
 
+function openBox(arg) {
+    arg.classList.remove('hidden');
+}
+
+function closeBox(arg) {
+    arg.classList.add('hidden');
+}
+
 //клонирования шаблона картинки
 function picturesSet() {
     for (let i = 1; i < photos.length; i++) {
@@ -105,14 +119,14 @@ function getComments(arg) {
 
 //клик по миниатюре картинки
 function onPictureClick(e) {
-    e.preventDefault;
+    e.preventDefault();
     imgBigPicture.src = e.currentTarget.querySelector('.picture__img').src;
     bigPictureLikesCount.textContent = e.currentTarget.querySelector('.picture__likes').textContent;
     bigPictureCommentsCount.textContent = e.currentTarget.querySelector('.picture__comments').textContent;
-    bigPictureDesc.textContent = photos[getRandomInt(0,25)].desc[getRandomInt(0,6)];
+    bigPictureDesc.textContent = photos[getRandomInt(0,PHOTOS_COUNT)].desc[getRandomInt(0,6)];
     getComments(bigPictureCommentsCount.textContent);   //коментарии
     document.querySelector('body').classList.add('open-modal');
-    bigPicture.classList.remove('hidden');
+    openBox(bigPicture);
 }
 
 //обработка большой картинки
@@ -130,16 +144,15 @@ function openBigPicture() {
 function bigPictureCommentsUpdate() {
     let socialComments = document.querySelectorAll('li.social__comment')
     for (let i = 0; i < socialComments.length; i++) {
-        let element = socialComments[i];
-        commentsWrapper.removeChild(element)
+        commentsWrapper.removeChild(socialComments[i])
     }
 }
 
 //алгоритм закрытия big picture
 function closeBigPicture(e) {
-    e.preventDefault;
+    e.preventDefault();
         bigPictureCommentsUpdate();
-        bigPicture.classList.add('hidden');
+        closeBox(bigPicture);
         document.querySelector('body').classList.remove('open-modal')
 }
 
@@ -148,16 +161,60 @@ function onCloseBigPictureBtnClick() {
     bigPictereCancel.addEventListener('click', closeBigPicture);
 }
 
-//спрятать блоки счётчика и загрузки доп. коментариев
+//спрятать блоки счётчика и загрузки доп. коментариев (в ТЗ 1. было)
 const counterComments = document.querySelector('.social__comment-count');
 const loaderComments = document.querySelector('.comments-loader');
 counterComments.classList.add('visually-hidden');
 loaderComments.classList.add('visually-hidden');
 //
-//
-//
+
+
 //Main INIT funcs
 getPhoto(photos); //генерация объектов "картинка"
 picturesSet(); //заполнение картинками страницы 
 openBigPicture(); //открытие большой картинки
 onCloseBigPictureBtnClick();// закрытие большой картинки
+
+
+//UPLOADER
+
+//инициализация ф-й uploader
+function initUploaderEventListner() {
+    
+    document.addEventListener('keydown', onUploaderEscPress);
+    imgUploaderBtnCLose.addEventListener('click', clickCloseUploader);
+}
+//извлечение ф-й uploader
+function removeUploaderEventListner() {
+    document.removeEventListener('keydown', onUploaderEscPress);
+    imgUploaderBtnCLose.addEventListener('click', clickCloseUploader);
+}
+
+function clickCloseUploader(e) {
+    e.preventDefault();
+    closeBox(previewPictureWrapper);
+    removeUploaderEventListner();
+}
+
+function onUploaderEscPress(e) {
+    if(e.key === 'Escape'){
+        e.preventDefault();
+        closeBox(previewPictureWrapper);
+        removeUploaderEventListner();
+    }
+}
+
+//загрузка и добавления изображения
+function changeHandler() {
+    let file = uploadFile.files[0];
+    let reader = new FileReader();
+    reader.onloadend = function () {
+        previewPicture.src = reader.result;  
+    }
+    reader.readAsDataURL(file);
+    openBox(previewPictureWrapper);
+    initUploaderEventListner();
+}
+uploadFile.addEventListener('change', changeHandler); 
+//одну и ту же картинку не удаётся второй раз выбрать и применить
+//
