@@ -180,13 +180,13 @@ onCloseBigPictureBtnClick();// закрытие большой картинки
 
 //инициализация ф-й uploader
 function initUploaderEventListner() {
-    
+    pin.addEventListener('mouseup', effectPinChange);
     document.addEventListener('keydown', onUploaderEscPress);
     imgUploaderBtnCLose.addEventListener('click', clickCloseUploader);
 }
 //извлечение ф-й uploader
 function removeUploaderEventListner() {
-
+    pin.removeEventListener('mouseup', effectPinChange);
     document.removeEventListener('keydown', onUploaderEscPress);
     imgUploaderBtnCLose.addEventListener('click', clickCloseUploader);
 }
@@ -225,11 +225,26 @@ function changeHandler() {
     initUploaderEventListner();
 }
 uploadFile.addEventListener('change', changeHandler); 
-//одну и ту же картинку не удаётся второй раз выбрать и применить
-//
+
+
 
 const pin = document.querySelector('.effect-level__pin');
-pin.addEventListener('mouseup', effectPinChange);
 function effectPinChange() {
-    console.log(pin);
+    console.log(pin);   
 }
+
+
+const effects = document.querySelectorAll('.effects__preview');
+function effectsCollector(mas) {
+    for (let i = 0; i < mas.length; i++) {
+        mas[i].addEventListener('click', effectsPictureFocus);       
+    }
+}
+
+
+function effectsPictureFocus(evt) {
+    previewPicture.className = previewPicture.classList[0];
+    previewPicture.classList.add(evt.currentTarget.classList[1]);
+}
+
+effectsCollector(effects);

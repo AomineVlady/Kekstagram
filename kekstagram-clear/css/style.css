@@ -19,6 +19,9 @@
   font-display: swap;
 }
 
+/* focused odjects */
+button:active,button:focus, a:active,a:focus, input:active, input:focus, span:active,span:focus, p:active, p:active, textarea:active, textarea:focus, label:active, label:focus{outline: none;}
+
 *,
 *::before,
 *::after {
