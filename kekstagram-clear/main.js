@@ -118,11 +118,11 @@ function getComments(arg) {
 }
 
 //клик по миниатюре картинки
-function onPictureClick(e) {
-    e.preventDefault();
-    imgBigPicture.src = e.currentTarget.querySelector('.picture__img').src;
-    bigPictureLikesCount.textContent = e.currentTarget.querySelector('.picture__likes').textContent;
-    bigPictureCommentsCount.textContent = e.currentTarget.querySelector('.picture__comments').textContent;
+function onPictureClick(evt) {
+    evt.preventDefault();
+    imgBigPicture.src = evt.currentTarget.querySelector('.picture__img').src;
+    bigPictureLikesCount.textContent = evt.currentTarget.querySelector('.picture__likes').textContent;
+    bigPictureCommentsCount.textContent = evt.currentTarget.querySelector('.picture__comments').textContent;
     bigPictureDesc.textContent = photos[getRandomInt(0,PHOTOS_COUNT)].desc[getRandomInt(0,6)];
     getComments(bigPictureCommentsCount.textContent);   //коментарии
     document.querySelector('body').classList.add('open-modal');
@@ -149,8 +149,8 @@ function bigPictureCommentsUpdate() {
 }
 
 //алгоритм закрытия big picture
-function closeBigPicture(e) {
-    e.preventDefault();
+function closeBigPicture(evt) {
+    evt.preventDefault();
         bigPictureCommentsUpdate();
         closeBox(bigPicture);
         document.querySelector('body').classList.remove('open-modal')
@@ -192,19 +192,21 @@ function removeUploaderEventListner() {
 }
 
 //закрытие uploader кликом
-function clickCloseUploader(e) {
-    e.preventDefault();
+function clickCloseUploader(evt) {
+    evt.preventDefault();
     closeBox(previewPictureWrapper);
     uploaderReset();
+    updatePictureEffect();
     removeUploaderEventListner();
 }
 
 //закрытие uploader клавишей escape
-function onUploaderEscPress(e) {
-    if(e.key === 'Escape'){
-        e.preventDefault();
+function onUploaderEscPress(evt) {
+    if(evt.key === 'Escape'){
+        evt.preventDefault();
         closeBox(previewPictureWrapper);
         uploaderReset();
+        updatePictureEffect();
         removeUploaderEventListner();
     }
 }
@@ -235,15 +237,21 @@ function effectPinChange() {
 
 
 const effects = document.querySelectorAll('.effects__preview');
+const effectsRadio = document.querySelectorAll('.effects__radio');
 function effectsCollector(mas) {
     for (let i = 0; i < mas.length; i++) {
         mas[i].addEventListener('click', effectsPictureFocus);       
     }
 }
 
-
-function effectsPictureFocus(evt) {
+//для обнуления эффектов.
+function updatePictureEffect(){
     previewPicture.className = previewPicture.classList[0];
+}
+
+//фокус на миниатюре эффекта
+function effectsPictureFocus(evt) {
+    updatePictureEffect();
     previewPicture.classList.add(evt.currentTarget.classList[1]);
 }
 
