@@ -19,7 +19,6 @@ const previewPicture = document.querySelector('.img-upload__preview').querySelec
 const uploadFile = document.querySelector('#upload-file');//input загрузчик файла
 const imgUploaderBtnCLose = document.querySelector('#upload-cancel');// кнопка закрытия формы редактирования
 
-
 const PHOTOS_COUNT = 25;    //кол-во фотографий
 
 //авторы коментариев и коментарии
@@ -87,16 +86,19 @@ function getPhoto(arg) {
     }        
 }
 
+//функция открытия (удаляет класс hidden у элемента)
 function openBox(arg) {
     arg.classList.remove('hidden');
 }
 
+//функция открытия (добавляет класс hidden элементу)
 function closeBox(arg) {
     arg.classList.add('hidden');
 }
 
-//клонирования шаблона картинки
+//заполнение страницы картинками путём клонирования шаблона
 function picturesSet() {
+    getPhoto(photos); //генерация объектов "картинка"
     for (let i = 1; i < photos.length; i++) {
         let newPhoto = templatePicture.cloneNode(true);
         newPhoto.querySelector('img').src = photos[i].url;   
@@ -127,6 +129,7 @@ function onPictureClick(evt) {
     getComments(bigPictureCommentsCount.textContent);   //коментарии
     document.querySelector('body').classList.add('open-modal');
     openBox(bigPicture);
+    initBigPictureEventListner();
 }
 
 //обработка большой картинки
@@ -135,7 +138,7 @@ function openBigPicture() {
     if(pictures.length>0){
         for (let i = 0; i < pictures.length; i++) {
             let picture = pictures[i];
-            picture.addEventListener('click', onPictureClick);        
+            picture.addEventListener('click', onPictureClick); 
         }
     }
 }
@@ -149,17 +152,39 @@ function bigPictureCommentsUpdate() {
 }
 
 //алгоритм закрытия big picture
-function closeBigPicture(evt) {
-    evt.preventDefault();
-        bigPictureCommentsUpdate();
-        closeBox(bigPicture);
-        document.querySelector('body').classList.remove('open-modal')
+function closeBigPicture() {
+    closeBox(bigPicture);
+    bigPictureCommentsUpdate();
+    document.querySelector('body').classList.remove('open-modal');
 }
 
-//клик close big picture
-function onCloseBigPictureBtnClick() {
-    bigPictereCancel.addEventListener('click', closeBigPicture);
+function clickOnCloseBigPicture(evt) {
+    evt.preventDefault();
+    closeBigPicture();
+    removeBigPictureEventListner();
 }
+
+function pressEscBigPicture(evt) {
+    if(evt.key === 'Escape'){
+        evt.preventDefault();
+        closeBigPicture();
+        removeBigPictureEventListner();
+    }
+}
+//
+
+
+
+function initBigPictureEventListner() {
+    bigPictereCancel.addEventListener('click', clickOnCloseBigPicture);
+    document.addEventListener('keydown', clickOnCloseBigPicture);
+}
+
+function removeBigPictureEventListner() {
+    bigPictereCancel.removeEventListener('click', clickOnCloseBigPicture);
+    document.removeEventListener('keydown', clickOnCloseBigPicture);
+}
+
 
 //спрятать блоки счётчика и загрузки доп. коментариев (в ТЗ 1. было)
 const counterComments = document.querySelector('.social__comment-count');
@@ -170,10 +195,8 @@ loaderComments.classList.add('visually-hidden');
 
 
 //Main INIT funcs
-getPhoto(photos); //генерация объектов "картинка"
 picturesSet(); //заполнение картинками страницы 
-openBigPicture(); //открытие большой картинки
-onCloseBigPictureBtnClick();// закрытие большой картинки
+openBigPicture(); //открытие большой картинки (присвоил всем миниатюрам алгоритм открытия)
 
 
 //UPLOADER
@@ -228,7 +251,7 @@ function changeHandler() {
 }
 uploadFile.addEventListener('change', changeHandler); 
 
-
+//эффекты - сложновато (переделать)
 
 const pin = document.querySelector('.effect-level__pin');
 function effectPinChange() {
