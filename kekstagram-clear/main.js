@@ -134,7 +134,7 @@ function onPictureClick(evt) {
 
 //обработка большой картинки
 function openBigPicture() {
-    const pictures = document.querySelectorAll('.picture');
+    let pictures = document.querySelectorAll('.picture');
     if(pictures.length>0){
         for (let i = 0; i < pictures.length; i++) {
             let picture = pictures[i];
@@ -203,15 +203,19 @@ openBigPicture(); //открытие большой картинки (присв
 
 //инициализация ф-й uploader
 function initUploaderEventListner() {
-    pin.addEventListener('mouseup', effectPinChange);
     document.addEventListener('keydown', onUploaderEscPress);
     imgUploaderBtnCLose.addEventListener('click', clickCloseUploader);
+    hashTag.addEventListener('focus', pressEcsRemove); 
+    hashTag.addEventListener('blur', hashTagVerification);
+    hashTag.addEventListener('blur',  pressEcsAdd);
 }
 //извлечение ф-й uploader
 function removeUploaderEventListner() {
-    pin.removeEventListener('mouseup', effectPinChange);
     document.removeEventListener('keydown', onUploaderEscPress);
-    imgUploaderBtnCLose.addEventListener('click', clickCloseUploader);
+    imgUploaderBtnCLose.removeEventListener('click', clickCloseUploader);
+    hashTag.removeEventListener('focus', pressEcsRemove); 
+    hashTag.removeEventListener('blur', hashTagVerification);
+    hashTag.removeEventListener('blur',  pressEcsAdd);
 }
 
 //закрытие uploader кликом
@@ -238,7 +242,14 @@ function uploaderReset() {
     uploadFile.value = ""; 
 }
 
-//загрузка и добавления изображенияc
+function pressEcsRemove() {
+    document.removeEventListener('keydown', onUploaderEscPress);
+}
+function pressEcsAdd() {
+    document.removeEventListener('keydown', onUploaderEscPress);
+}
+
+//загрузка и добавления изображения
 function changeHandler() {
     let file = uploadFile.files[0];
     let reader = new FileReader();
@@ -251,16 +262,13 @@ function changeHandler() {
 }
 uploadFile.addEventListener('change', changeHandler); 
 
-//эффекты - сложновато (переделать)
-
+//эффекты - сложновато (скорее всего переделать)
 const pin = document.querySelector('.effect-level__pin');
-function effectPinChange() {
-    console.log(pin);   
-}
+const pinDepth = document.querySelector('.effect-level__depth');
+const pinLine = document.querySelector('.effect-level__line');
 
 
 const effects = document.querySelectorAll('.effects__preview');
-const effectsRadio = document.querySelectorAll('.effects__radio');
 function effectsCollector(mas) {
     for (let i = 0; i < mas.length; i++) {
         mas[i].addEventListener('click', effectsPictureFocus);       
@@ -279,3 +287,70 @@ function effectsPictureFocus(evt) {
 }
 
 effectsCollector(effects);
+
+
+/*
+Работа с валидацией формы
+*/
+
+const hashTag = document.querySelector('#hashtags');
+const btnSubmit = document.querySelector('#upload-submit');
+const errorMessage = document.querySelector('.hashtag__text__error');
+
+function hashTagVerification() { 
+    let tags = hashTag.value.trim().split(' ');
+    if (hashTagLengthVerification(tags) === true) {
+        invalidSet("Один хэштег не должен превышать 20 символов.");
+    }
+    else if (hashTagCountVerification(tags) === true) {
+        invalidSet("Нельзя указывать больше 5 тегов.");
+    }
+    else if (hashTagHashVerification(tags) === true) {
+        invalidSet("Хэштег должен начинаться с символа '#'.");
+    }
+    else{
+        validSet();
+    }
+}
+
+function hashTagLengthVerification(tagsMassiv) {
+    for (let i = 0; i < tagsMassiv.length; i++) {
+        if(tagsMassiv[i].length>20){
+            return true;
+        } 
+    }
+}
+
+function hashTagCountVerification(tagsMassiv) {
+    return tagsMassiv.length>5 ? true:false;
+}
+
+function hashTagHashVerification(tagsMassiv) {
+    if (tagsMassiv !== 0 || tagsMassiv !== undefined) {
+        let re = new RegExp('#\w');
+        for (let i = 0; i < tagsMassiv.length; i++) {
+            for (let j = 0; j < tagsMassiv.length; j++) {
+                if (tagsMassiv[i,j][0] === "#") {
+                    return false;
+                }
+            }
+        }
+    }
+}
+
+
+
+function validSet() {
+    hashTag.classList.remove('invalid');
+    hashTag.classList.add('valid');
+    errorMessage.textContent = "";
+    errorMessage.classList.add('hidden')
+    
+}
+
+function invalidSet(err) {
+    hashTag.classList.remove('valid');
+    hashTag.classList.add('invalid');
+    errorMessage.textContent = err;
+    errorMessage.classList.remove('hidden')
+}

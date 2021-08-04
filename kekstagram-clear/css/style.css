@@ -19,9 +19,6 @@
   font-display: swap;
 }
 
-/* focused odjects */
-button:active,button:focus, a:active,a:focus, input:active, input:focus, span:active,span:focus, p:active, p:active, textarea:active, textarea:focus, label:active, label:focus{outline: none;}
-
 *,
 *::before,
 *::after {
@@ -743,8 +740,7 @@ main {
 .text__hashtags {
   width: 450px;
 
-  margin: 0 auto;
-  margin-bottom: 20px;
+  margin: 10px auto;
   padding: 5px 10px;
 
   font-family: "Open Sans", "Arial", sans-serif;
@@ -758,7 +754,7 @@ main {
   width: 450px;
   height: 100px;
 
-  margin: 0 auto;
+  margin: 10px auto;
   padding: 15px 10px;
 
   font-family: "Open Sans", "Arial", sans-serif;
@@ -1404,6 +1400,37 @@ main {
       -ms-transform: translateX(-50%);
           transform: translateX(-50%);
 }
+
+
+
+.img-upload__text{
+  display:flex;
+  flex-wrap: wrap;
+}
+
+/* валидация */
+.invalid{
+  border: 3px solid #c70b0b; 
+}
+
+.valid{
+  border: 3px solid #45cc10;
+}
+
+.hashtag__text__error{
+  margin: 0 auto;
+  text-align: left;
+  font-size: 0.8em;
+  text-transform: none;
+  color:#ffadad;
+  opacity: 1;
+  background-color: #c70b0b7e;
+  padding: 5px 10px;
+  border-radius: 5px;
+  width: 450px;
+}
+
+
 
 
 /* Адаптивности чуток
