@@ -207,7 +207,7 @@ function initUploaderEventListner() {
     imgUploaderBtnCLose.addEventListener('click', clickCloseUploader);
     hashTag.addEventListener('focus', pressEcsRemove); 
     hashTag.addEventListener('blur', hashTagVerification);
-    hashTag.addEventListener('blur',  pressEcsAdd);
+    hashTag.addEventListener('blur', pressEcsAdd);
 }
 //извлечение ф-й uploader
 function removeUploaderEventListner() {
@@ -215,7 +215,7 @@ function removeUploaderEventListner() {
     imgUploaderBtnCLose.removeEventListener('click', clickCloseUploader);
     hashTag.removeEventListener('focus', pressEcsRemove); 
     hashTag.removeEventListener('blur', hashTagVerification);
-    hashTag.removeEventListener('blur',  pressEcsAdd);
+    hashTag.removeEventListener('blur', pressEcsAdd);
 }
 
 //закрытие uploader кликом
@@ -246,7 +246,7 @@ function pressEcsRemove() {
     document.removeEventListener('keydown', onUploaderEscPress);
 }
 function pressEcsAdd() {
-    document.removeEventListener('keydown', onUploaderEscPress);
+    document.addEventListener('keydown', onUploaderEscPress);
 }
 
 //загрузка и добавления изображения
@@ -298,18 +298,26 @@ const btnSubmit = document.querySelector('#upload-submit');
 const errorMessage = document.querySelector('.hashtag__text__error');
 
 function hashTagVerification() { 
-    let tags = hashTag.value.trim().split(' ');
-    if (hashTagLengthVerification(tags) === true) {
-        invalidSet("Один хэштег не должен превышать 20 символов.");
-    }
-    else if (hashTagCountVerification(tags) === true) {
-        invalidSet("Нельзя указывать больше 5 тегов.");
-    }
-    else if (hashTagHashVerification(tags) === true) {
-        invalidSet("Хэштег должен начинаться с символа '#'.");
+    let tags = hashTag.value.trim().toLowerCase().split(' ');
+    if (tags[0] !== "") {
+        if (hashTagLengthVerification(tags) === true) {
+            invalidSet("Один хэштег не должен превышать 20 символов.");
+        }
+        else if (hashTagCountVerification(tags) === true) {
+            invalidSet("Нельзя указывать больше 5 тегов.");
+        }
+        else if (hashTagHashVerification(tags) === true) {
+            invalidSet("Хэштег должен начинаться с символа '#' и продолжаться словом/словосочетаем без пробелов.");
+        }
+        else if (repeatedHashTagVerificaton(tags) === true) {
+            invalidSet("Хэштеги не должны повторяться.");
+        }
+        else{
+            validSet();
+        }
     }
     else{
-        validSet();
+        validReset();
     }
 }
 
@@ -326,25 +334,44 @@ function hashTagCountVerification(tagsMassiv) {
 }
 
 function hashTagHashVerification(tagsMassiv) {
-    if (tagsMassiv !== 0 || tagsMassiv !== undefined) {
-        let re = new RegExp('#\w');
-        for (let i = 0; i < tagsMassiv.length; i++) {
-            for (let j = 0; j < tagsMassiv.length; j++) {
-                if (tagsMassiv[i,j][0] === "#") {
-                    return false;
-                }
-            }
+    let re = /\#\w+/;
+    for (let i = 0; i < tagsMassiv.length; i++) {
+        if(re.test(tagsMassiv[i]) === false){
+            return true; 
         }
     }
 }
 
+//проверка на потворяющиеся слова
+function repeatedHashTagVerificaton(tagsMassiv) {
+    if (tagsMassiv.length>1) {   
+        let copyMassive = tagsMassiv;
+        for (let i = 0; i < tagsMassiv.length; i++) {
+            for (let j = 1; j < copyMassive.length; j++) {
+                if (copyMassive[i+j] === tagsMassiv[i]) {
+                    return true;
+                }
+            }
+        }
+    }   
+}
 
+function validReset() {
+    hashTag.classList.remove('invalid');
+    hashTag.classList.remove('valid');
+    hashTag.value = "";
+    errorMessage.textContent = "";
+    errorMessage.classList.add('hidden');
+    btnSubmit.removeAttribute("disabled","disabled");
+    
+}
 
 function validSet() {
     hashTag.classList.remove('invalid');
     hashTag.classList.add('valid');
     errorMessage.textContent = "";
-    errorMessage.classList.add('hidden')
+    errorMessage.classList.add('hidden');
+    btnSubmit.removeAttribute("disabled","disabled");
     
 }
 
@@ -352,5 +379,6 @@ function invalidSet(err) {
     hashTag.classList.remove('valid');
     hashTag.classList.add('invalid');
     errorMessage.textContent = err;
-    errorMessage.classList.remove('hidden')
+    errorMessage.classList.remove('hidden');
+    btnSubmit.setAttribute("disabled","disabled");
 }
