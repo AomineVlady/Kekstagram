@@ -101,6 +101,7 @@ function picturesSet() {
     getPhoto(photos); //генерация объектов "картинка"
     for (let i = 1; i < photos.length; i++) {
         let newPhoto = templatePicture.cloneNode(true);
+        newPhoto.addEventListener('click', onPictureClick);
         newPhoto.querySelector('img').src = photos[i].url;   
         newPhoto.querySelector('.picture__comments').textContent = photos[i].comments;   
         newPhoto.querySelector('.picture__likes').textContent = photos[i].likes;   
@@ -130,17 +131,6 @@ function onPictureClick(evt) {
     document.querySelector('body').classList.add('open-modal');
     openBox(bigPicture);
     initBigPictureEventListner();
-}
-
-//обработка большой картинки
-function openBigPicture() {
-    let pictures = document.querySelectorAll('.picture');
-    if(pictures.length>0){
-        for (let i = 0; i < pictures.length; i++) {
-            let picture = pictures[i];
-            picture.addEventListener('click', onPictureClick); 
-        }
-    }
 }
 
 //обновление коментариев
@@ -196,8 +186,6 @@ loaderComments.classList.add('visually-hidden');
 
 //Main INIT funcs
 picturesSet(); //заполнение картинками страницы 
-openBigPicture(); //открытие большой картинки (присвоил всем миниатюрам алгоритм открытия)
-
 
 //UPLOADER
 
@@ -208,6 +196,7 @@ function initUploaderEventListner() {
     hashTag.addEventListener('focus', pressEcsRemove); 
     hashTag.addEventListener('blur', hashTagVerification);
     hashTag.addEventListener('blur', pressEcsAdd);
+    effectsCollector(effects);
 }
 //извлечение ф-й uploader
 function removeUploaderEventListner() {
@@ -221,25 +210,23 @@ function removeUploaderEventListner() {
 //закрытие uploader кликом
 function clickCloseUploader(evt) {
     evt.preventDefault();
-    closeBox(previewPictureWrapper);
     uploaderReset();
-    updatePictureEffect();
-    removeUploaderEventListner();
 }
 
 //закрытие uploader клавишей escape
 function onUploaderEscPress(evt) {
     if(evt.key === 'Escape'){
         evt.preventDefault();
-        closeBox(previewPictureWrapper);
         uploaderReset();
-        updatePictureEffect();
-        removeUploaderEventListner();
     }
 }
-//сброс uploader-изображения
+//сброс uploader
 function uploaderReset() {
     uploadFile.value = ""; 
+    closeBox(previewPictureWrapper);
+    updatePictureEffect();
+    removeUploaderEventListner();
+    validReset();
 }
 
 function pressEcsRemove() {
@@ -262,11 +249,7 @@ function changeHandler() {
 }
 uploadFile.addEventListener('change', changeHandler); 
 
-//эффекты - сложновато (скорее всего переделать)
-const pin = document.querySelector('.effect-level__pin');
-const pinDepth = document.querySelector('.effect-level__depth');
-const pinLine = document.querySelector('.effect-level__line');
-
+//эффекты - сложноватo
 
 const effects = document.querySelectorAll('.effects__preview');
 function effectsCollector(mas) {
@@ -286,7 +269,11 @@ function effectsPictureFocus(evt) {
     previewPicture.classList.add(evt.currentTarget.classList[1]);
 }
 
-effectsCollector(effects);
+
+//перемещение маркера (изменения глубины накладываемого эффекта)
+const pin = document.querySelector('.effect-level__pin');
+const pinDepth = document.querySelector('.effect-level__depth');
+const pinLine = document.querySelector('.effect-level__line');
 
 
 /*
@@ -296,6 +283,7 @@ effectsCollector(effects);
 const hashTag = document.querySelector('#hashtags');
 const btnSubmit = document.querySelector('#upload-submit');
 const errorMessage = document.querySelector('.hashtag__text__error');
+const textDescription = document.querySelector('.text__description');
 
 function hashTagVerification() { 
     let tags = hashTag.value.trim().toLowerCase().split(' ');
@@ -356,10 +344,12 @@ function repeatedHashTagVerificaton(tagsMassiv) {
     }   
 }
 
+//обновление формы
 function validReset() {
     hashTag.classList.remove('invalid');
     hashTag.classList.remove('valid');
     hashTag.value = "";
+    textDescription.value = "";
     errorMessage.textContent = "";
     errorMessage.classList.add('hidden');
     btnSubmit.removeAttribute("disabled","disabled");
