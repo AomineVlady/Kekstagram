@@ -271,9 +271,9 @@ function effectsPictureFocus(evt) {
 
 
 //перемещение маркера (изменения глубины накладываемого эффекта)
-const pin = document.querySelector('.effect-level__pin');
 const pinDepth = document.querySelector('.effect-level__depth');
 const pinLine = document.querySelector('.effect-level__line');
+const pin = pinLine.querySelector('.effect-level__pin');
 
 
 /*
@@ -372,3 +372,4 @@ function invalidSet(err) {
     errorMessage.classList.remove('hidden');
     btnSubmit.setAttribute("disabled","disabled");
 }
+
