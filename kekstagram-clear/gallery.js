@@ -25,13 +25,13 @@ function getRandomInt(min, max) {
 //генерация объектов "картинка"
 function getPhoto(arg) {
     for (let i = 0; i < PHOTOS_COUNT; i++) {
-        arg[i] = {   
+        arg[i] = {
             url: `photos/${i}.jpg`,
-            likes: `${getRandomInt(15,200)}`,
-            comments: `${getRandomInt(0,6)}`,
+            likes: `${getRandomInt(15, 200)}`,
+            comments: `${getRandomInt(0, 6)}`,
             desc: descriptionList,
         }
-    }        
+    }
 }
 
 //заполнение страницы картинками путём клонирования шаблона
@@ -40,9 +40,9 @@ function picturesSet() {
     for (let i = 1; i < photos.length; i++) {
         let newPhoto = templatePicture.cloneNode(true);
         newPhoto.addEventListener('click', onPictureClick);
-        newPhoto.querySelector('img').src = photos[i].url;   
-        newPhoto.querySelector('.picture__comments').textContent = photos[i].comments;   
-        newPhoto.querySelector('.picture__likes').textContent = photos[i].likes;   
+        newPhoto.querySelector('img').src = photos[i].url;
+        newPhoto.querySelector('.picture__comments').textContent = photos[i].comments;
+        newPhoto.querySelector('.picture__likes').textContent = photos[i].likes;
         picturesWrapper.appendChild(newPhoto);
     }
 }
@@ -51,9 +51,9 @@ function picturesSet() {
 function getComments(arg) {
     for (let i = 0; i < arg; i++) {
         let newComment = commentsTemplate.cloneNode(true);
-        let rndAutor = getRandomInt(0,autorComments.length);
-        newComment.querySelector('img').src = autorComments[rndAutor].avatar;   
-        newComment.querySelector('.social__text').textContent = autorComments[rndAutor].message; 
+        let rndAutor = getRandomInt(0, autorComments.length);
+        newComment.querySelector('img').src = autorComments[rndAutor].avatar;
+        newComment.querySelector('.social__text').textContent = autorComments[rndAutor].message;
         commentsWrapper.appendChild(newComment);
     }
 }
@@ -64,7 +64,7 @@ function onPictureClick(evt) {
     imgBigPicture.src = evt.currentTarget.querySelector('.picture__img').src;
     bigPictureLikesCount.textContent = evt.currentTarget.querySelector('.picture__likes').textContent;
     bigPictureCommentsCount.textContent = evt.currentTarget.querySelector('.picture__comments').textContent;
-    bigPictureDesc.textContent = photos[getRandomInt(0,PHOTOS_COUNT)].desc[getRandomInt(0,6)];
+    bigPictureDesc.textContent = photos[getRandomInt(0, PHOTOS_COUNT)].desc[getRandomInt(0, 6)];
     getComments(bigPictureCommentsCount.textContent);   //коментарии
     document.querySelector('body').classList.add('open-modal');
     openBox(bigPicture);
@@ -93,14 +93,14 @@ function clickOnCloseBigPicture(evt) {
 }
 
 function pressEscBigPicture(evt) {
-    if(evt.key === 'Escape'){
+    if (evt.key === 'Escape') {
         evt.preventDefault();
         closeBigPicture();
         removeBigPictureEventListner();
     }
 }
 
-picturesSet(); //заполнение картинками страницы 
+
 
 function initBigPictureEventListner() {
     bigPictereCancel.addEventListener('click', clickOnCloseBigPicture);
@@ -112,3 +112,51 @@ function removeBigPictureEventListner() {
     document.removeEventListener('keydown', clickOnCloseBigPicture);
 }
 
+//кнопки сортировки фотографий
+//скорее всего код нечитабельный
+const countLike = ".picture__likes"
+const countComments = ".picture__comments"
+const btnSortPopular = document.querySelector('#filter-popular')
+const btnSortDiscus = document.querySelector('#filter-discussed')
+const sortBtns = document.querySelectorAll('.img-filters__button')//нажатая кнопка
+
+function btnSortClick() {
+    sortBtns.forEach(btn => btn.addEventListener('click', (e) => {
+        sortBtns.forEach(i => i.classList.remove('img-filters__button--active'))
+        e.target.classList.add('img-filters__button--active')
+    }))
+    btnSortPopular.addEventListener('click', sortPictureByLikes)
+    btnSortDiscus.addEventListener('click', sortPictureByComments)
+}
+
+function sortPictureByLikes() {
+    let thumb = document.querySelectorAll(".picture");
+    thumb = [].slice.call(thumb, 0);
+    let parent = thumb.map((el) => {
+        return el.parentNode
+    });
+    thumb.sort((a, b) => {
+        return b.querySelector(".picture__likes").textContent - a.querySelector(".picture__likes").textContent
+    }).forEach((el, i) => {
+        parent[i].appendChild(el)
+    })
+}
+
+function sortPictureByComments() {
+    let thumb = document.querySelectorAll(".picture");
+    thumb = [].slice.call(thumb, 0);
+    let parent = thumb.map((el) => {
+        return el.parentNode
+    });
+    thumb.sort((a, b) => {
+        return b.querySelector(".picture__comments").textContent - a.querySelector(".picture__comments").textContent
+    }).forEach((el, i) => {
+        parent[i].appendChild(el)
+    })
+}
+
+
+window.onload = () => {
+    picturesSet() //заполнение картинками страницы 
+    btnSortClick() // переключатели сортировки фотографий
+}

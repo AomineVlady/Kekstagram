@@ -1,3 +1,4 @@
+"use strict"
 const imgBigPicture = document.querySelector('.big-picture__img').querySelector('img'); //содержимое большой картинки
 const bigPictureLikesCount = document.querySelector('.likes-count'); //количество likes
 const bigPictureCommentsCount = document.querySelector('.comments-count'); //количество comments
