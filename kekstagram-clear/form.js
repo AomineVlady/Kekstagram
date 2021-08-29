@@ -7,7 +7,7 @@ const textDescription = document.querySelector('.text__description');
 
 function hashTagVerification() {
     let tags = hashTag.value.trim().toLowerCase().split(' ');
-    if (tags[0] !== "") {s
+    if (tags[0] !== "") {
         if (hashTagLengthVerification(tags) === true) {
             invalidSet("Один хэштег не должен превышать 20 символов.");
         }
